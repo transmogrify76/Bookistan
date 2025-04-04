@@ -249,19 +249,18 @@ const HelpPage = () => {
         {/* Page Indicator */}
         <div className="absolute bottom-8 flex gap-2">
           {pages.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                const newDirection = index > currentPage ? 1 : -1;
-                paginate(index - currentPage);
-              }}
-              className={`w-3 h-3 rounded-full transition-all ${
-                index === currentPage 
-                  ? 'bg-indigo-600 scale-125' 
-                  : 'bg-gray-300 hover:bg-gray-400'
-              }`}
-              disabled={isAnimating}
-            />
+           <button
+           key={index}
+           onClick={() => {
+             paginate(index - currentPage);
+           }}
+           className={`w-3 h-3 rounded-full transition-all ${
+             index === currentPage 
+               ? 'bg-indigo-600 scale-125' 
+               : 'bg-gray-300 hover:bg-gray-400'
+           }`}
+           disabled={isAnimating}
+         />
           ))}
         </div>
       </div>
