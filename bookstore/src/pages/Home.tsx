@@ -23,12 +23,10 @@ const Home = () => {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const navigate = useNavigate();
 
-  // Check authentication status
   const checkAuth = () => {
     return !!localStorage.getItem('authToken');
   };
 
-  // Generate enhanced book data
   const books: Book[] = Array.from({ length: 32 }, (_, index) => {
     const id = index + 1;
     const isEven = id % 2 === 0;
@@ -45,7 +43,7 @@ const Home = () => {
       description: isEven 
         ? "A spiritual self-help classic about living with greater courage, balance, abundance and joy. The Monk Who Sold His Ferrari tells the extraordinary story of Julian Mantle, a lawyer forced to confront the spiritual crisis of his out-of-balance life."
         : "An emotional story about love, loss and the power of human connection. Wish I Could Tell You is a poignant tale that explores the deepest emotions of the human heart through its beautifully crafted characters.",
-      rating: Math.floor(Math.random() * 2) + 4, // Random rating 4-5
+      rating: Math.floor(Math.random() * 2) + 4, 
       pages: isEven ? 198 : 256,
       language: "English",
       publisher: isEven ? "HarperCollins" : "Penguin Random House",
@@ -60,7 +58,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      {/* Navigation Bar - Modern Glass Morphism */}
+
       <nav className="fixed w-full top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
@@ -73,7 +71,7 @@ const Home = () => {
               </div>
               <div className="hidden md:flex items-center space-x-6">
                 <a href="#" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">Browse</a>
-                <a href="#" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">Sell</a>
+                <a href="#" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">Donate</a>
                 <a href="#" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">Community</a>
                 <a href="#" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">About</a>
               </div>
@@ -86,6 +84,19 @@ const Home = () => {
                 </svg>
                 <span>Help</span>
               </button>
+
+  
+              {checkAuth() && (
+                <button
+                  onClick={() => navigate('/profile')}
+                  className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                >
+                  <svg className="h-6 w-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </button>
+              )}
+
               {checkAuth() ? (
                 <button
                   onClick={() => {
@@ -109,7 +120,6 @@ const Home = () => {
         </div>
       </nav>
 
-      {/* Hero Section - Modern Gradient Background */}
       <div className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-indigo-500 to-purple-600">
         <div className="max-w-3xl mx-auto text-center">
           <motion.h1 
@@ -173,7 +183,6 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Book Grid - Modern Card Design */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {filteredBooks.length === 0 ? (
           <motion.div 
@@ -290,7 +299,6 @@ const Home = () => {
                   </div>
                 </div>
 
-                {/* Book Details */}
                 <div className="relative">
                   <button 
                     className="absolute -top-4 -right-4 p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
@@ -353,7 +361,6 @@ const Home = () => {
                       <button 
                         className="flex-1 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:shadow-md text-white font-medium rounded-lg transition-all"
                         onClick={() => {
-                          // Add to cart functionality
                           setSelectedBook(null);
                         }}
                       >
@@ -362,7 +369,6 @@ const Home = () => {
                       <button 
                         className="flex-1 py-3 bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-medium rounded-lg transition-colors"
                         onClick={() => {
-                          // Wishlist functionality
                           setSelectedBook(null);
                         }}
                       >
@@ -377,7 +383,6 @@ const Home = () => {
         )}
       </AnimatePresence>
 
-      {/* Floating Action Button */}
       <motion.button 
         className="fixed bottom-6 right-6 p-4 bg-gradient-to-r from-indigo-600 to-indigo-500 rounded-full shadow-lg text-white hover:shadow-xl transition-all"
         whileHover={{ scale: 1.05 }}
@@ -388,7 +393,6 @@ const Home = () => {
         </svg>
       </motion.button>
 
-      {/* Footer - Modern Gradient */}
       <footer className="bg-gradient-to-r from-indigo-700 to-indigo-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
