@@ -23,6 +23,11 @@ const Home = () => {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const navigate = useNavigate();
 
+  // Check authentication status
+  const checkAuth = () => {
+    return !!localStorage.getItem('authToken');
+  };
+
   // Generate enhanced book data
   const books: Book[] = Array.from({ length: 32 }, (_, index) => {
     const id = index + 1;
@@ -81,12 +86,24 @@ const Home = () => {
                 </svg>
                 <span>Help</span>
               </button>
-              <button
-                onClick={() => navigate('/login')}
-                className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 rounded-lg text-white font-medium hover:shadow-md transition-all"
-              >
-                Sign In
-              </button>
+              {checkAuth() ? (
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('authToken');
+                    navigate('/login');
+                  }}
+                  className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 rounded-lg text-white font-medium hover:shadow-md transition-all"
+                >
+                  Sign Out
+                </button>
+              ) : (
+                <button
+                  onClick={() => navigate('/login')}
+                  className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 rounded-lg text-white font-medium hover:shadow-md transition-all"
+                >
+                  Sign In
+                </button>
+              )}
             </div>
           </div>
         </div>
