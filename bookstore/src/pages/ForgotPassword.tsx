@@ -8,7 +8,7 @@ const ForgotPassword = () => {
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [step, setStep] = useState(1); // 1: Email, 2: OTP, 3: New Password
+  const [step, setStep] = useState(1); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -104,7 +104,7 @@ const ForgotPassword = () => {
       className="min-h-screen bg-cover bg-center flex flex-col justify-center py-12 sm:px-6 lg:px-8"
       style={{ backgroundImage: `url(${bgImage})` }}
     >
-      {/* Parent container with a left offset */}
+
       <div className="relative" style={{ marginLeft: '-500px' }}>
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <motion.div

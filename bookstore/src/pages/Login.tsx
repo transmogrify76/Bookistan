@@ -42,7 +42,6 @@ const Login = () => {
       className="min-h-screen bg-cover bg-center flex flex-col justify-center py-12 sm:px-6 lg:px-8"
       style={{ backgroundImage: `url(${bgImage})` }}
     >
-      {/* Parent container with a left offset */}
       <div className="relative" style={{ marginLeft: '-500px' }}>
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <motion.div

@@ -34,7 +34,6 @@ const AboutUs = () => {
   ];
 
   const pages = [
-    // Page 0 - Cover
     <div key="cover" className="h-full w-full flex items-center justify-center">
       <motion.div
         initial={{ scale: 0.8 }}
@@ -57,7 +56,6 @@ const AboutUs = () => {
       </motion.div>
     </div>,
 
-    // Page 1 - Mission
     <motion.div 
       key="mission"
       className="bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-2xl p-8 h-full"
@@ -84,7 +82,6 @@ const AboutUs = () => {
       </div>
     </motion.div>,
 
-    // Page 2 - Story
     <motion.div 
       key="story"
       className="bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-2xl p-8 h-full"
@@ -124,7 +121,6 @@ const AboutUs = () => {
       </div>
     </motion.div>,
 
-    // Page 3 - Team
     <motion.div 
       key="team"
       className="bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-2xl p-8 h-full"
@@ -156,7 +152,6 @@ const AboutUs = () => {
       </div>
     </motion.div>,
 
-    // Page 4 - CTA
     <motion.div 
       key="cta"
       className="bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-2xl p-8 h-full flex flex-col items-center justify-center"
@@ -235,7 +230,6 @@ const AboutUs = () => {
           </motion.div>
         </AnimatePresence>
 
-        {/* Navigation Controls */}
         {currentPage > 0 && (
           <motion.button
             className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 bg-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all"
@@ -258,7 +252,6 @@ const AboutUs = () => {
           </motion.button>
         )}
 
-        {/* Page Indicator */}
         <div className="absolute bottom-8 flex gap-2">
           {pages.map((_, index) => (
             <div

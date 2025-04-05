@@ -25,7 +25,7 @@ const HelpPage = () => {
   ];
 
   const pages = [
-    // Page 0 - Cover
+
     <div key="cover" className="h-full w-full flex items-center justify-center">
       <motion.div
         initial={{ scale: 0.8 }}
@@ -48,7 +48,6 @@ const HelpPage = () => {
       </motion.div>
     </div>,
 
-    // Page 1 - Getting Started
     <motion.div 
       key="getting-started"
       className="bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-2xl p-8 h-full overflow-y-auto"
@@ -93,7 +92,6 @@ const HelpPage = () => {
       </div>
     </motion.div>,
 
-    // Page 2 - FAQ
     <motion.div 
       key="faq"
       className="bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-2xl p-8 h-full overflow-y-auto"
@@ -119,7 +117,6 @@ const HelpPage = () => {
       </div>
     </motion.div>,
 
-    // Page 3 - Contact
     <motion.div 
       key="contact"
       className="bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-2xl p-8 h-full flex flex-col"
@@ -221,7 +218,6 @@ const HelpPage = () => {
           </motion.div>
         </AnimatePresence>
 
-        {/* Navigation Controls */}
         {currentPage > 0 && (
           <motion.button
             className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 bg-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all"
@@ -246,7 +242,6 @@ const HelpPage = () => {
           </motion.button>
         )}
 
-        {/* Page Indicator */}
         <div className="absolute bottom-8 flex gap-2">
           {pages.map((_, index) => (
            <button
