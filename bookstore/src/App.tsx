@@ -6,7 +6,7 @@ import Profile from './pages/Profile';
 import ForgotPassword from './pages/ForgotPassword';
 import AboutUs from './pages/AboutUs';
 import HelpPage from './pages/HelpPage';
-
+import DonateBook from './pages/DonateBook';
 
 function App() {
   return (
@@ -20,6 +20,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/help" element={<HelpPage />} />
+        <Route path="/donate" element={<DonateBook />} />
       </Routes>
     </Router>
   );
