@@ -71,7 +71,7 @@ const Home = () => {
               </div>
               <div className="hidden md:flex items-center space-x-6">
                 <a href="#" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">Browse</a>
-                <a href="#" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">Donate</a>
+                <a href="/donate" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">Donate</a>
                 <a href="#" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">Community</a>
                 <a href="/about" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">About</a>
               </div>
