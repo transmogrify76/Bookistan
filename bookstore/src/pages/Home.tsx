@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,33 +17,42 @@ interface Book {
   year: number;
 }
 
+interface Subcategory {
+  id: string;
+  name: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  subcategory: Subcategory[];
+}
+
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedGenre, setSelectedGenre] = useState('All');
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>('All');
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const navigate = useNavigate();
-
-  const checkAuth = () => {
-    return !!localStorage.getItem('authToken');
-  };
+  const checkAuth = () => !!localStorage.getItem('authToken');
 
   const books: Book[] = Array.from({ length: 32 }, (_, index) => {
     const id = index + 1;
     const isEven = id % 2 === 0;
-    
     return {
       id,
-      title: isEven ? "The Monk who Sold his Ferrari" : "Wish I Could Tell You",
+      title: isEven ? "The Monk Who Sold His Ferrari" : "Wish I Could Tell You",
       author: isEven ? "Robin Sharma" : "Durjoy Dutta",
       image: isEven
         ? "https://m.media-amazon.com/images/I/61OByUf1TfL.jpg"
         : "https://m.media-amazon.com/images/I/91R5TW7tdzL.jpg",
       price: isEven ? 349 : 299,
       genre: isEven ? "Self-Help" : "Romance",
-      description: isEven 
-        ? "A spiritual self-help classic about living with greater courage, balance, abundance and joy. The Monk Who Sold His Ferrari tells the extraordinary story of Julian Mantle, a lawyer forced to confront the spiritual crisis of his out-of-balance life."
-        : "An emotional story about love, loss and the power of human connection. Wish I Could Tell You is a poignant tale that explores the deepest emotions of the human heart through its beautifully crafted characters.",
-      rating: Math.floor(Math.random() * 2) + 4, 
+      description: isEven
+        ? "A spiritual self-help classic about living a more balanced and joyful life."
+        : "An emotional story about love, loss, and human connection.",
+      rating: Math.floor(Math.random() * 2) + 4,
       pages: isEven ? 198 : 256,
       language: "English",
       publisher: isEven ? "HarperCollins" : "Penguin Random House",
@@ -51,14 +60,35 @@ const Home = () => {
     };
   });
 
-  const filteredBooks = books.filter(book => 
-    book.title.toLowerCase().includes(searchQuery.toLowerCase()) && 
-    (selectedGenre === 'All' || book.genre === selectedGenre)
-  );
+  useEffect(() => {
+    fetch('http://localhost:5400/api/booksops/loadcategories')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories');
+        }
+        return response.json();
+      })
+      .then((data: Category[]) => {
+        setCategories(data);
+      })
+      .catch(error => console.error("Error fetching categories:", error));
+  }, []);
+
+  const handleCategorySelect = (cat: Category | null) => {
+    setSelectedCategory(cat);
+    setSelectedSubcategory('All');
+  };
+
+  const filteredBooks = books.filter(book => {
+    if (!book.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    if (selectedSubcategory !== 'All') {
+      return book.genre.toLowerCase() === selectedSubcategory.toLowerCase();
+    }   
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-
       <nav className="fixed w-full top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
@@ -76,22 +106,19 @@ const Home = () => {
                 <a href="/about" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">About</a>
               </div>
             </div>
-            
             <div className="flex items-center space-x-4">
-              <button  className="hidden lg:flex items-center space-x-1 text-gray-700 hover:text-indigo-600 transition-colors"
-              onClick={() => window.location.href = '/help'}>
+              <button 
+                className="hidden lg:flex items-center space-x-1 text-gray-700 hover:text-indigo-600 transition-colors"
+                onClick={() => window.location.href = '/help'}
+              >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
                 <span>Help</span>
               </button>
-
-  
+              
               {checkAuth() && (
-                <button
-                  onClick={() => navigate('/profile')}
-                  className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-                >
+                <button onClick={() => navigate('/profile')} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                   <svg className="h-6 w-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
@@ -99,11 +126,8 @@ const Home = () => {
               )}
 
               {checkAuth() ? (
-                <button
-                  onClick={() => {
-                    localStorage.removeItem('authToken');
-                    navigate('/login');
-                  }}
+                <button 
+                  onClick={() => { localStorage.removeItem('authToken'); navigate('/login'); }}
                   className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-indigo-500 rounded-lg text-white font-medium hover:shadow-md transition-all"
                 >
                   Sign Out
@@ -127,29 +151,29 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl md:text-5xl font-bold text-white mb-6"
+            className="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-wide"
           >
             Discover Your Next <span className="text-amber-300">Reading</span> Adventure
           </motion.h1>
-          
+
           <motion.p 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
             className="text-lg text-indigo-100 mb-8 max-w-xl mx-auto"
           >
-            Find your next favorite book from our curated collection of bestsellers and hidden gems.
+            Choose a category, refine by type, and find your perfect book.
           </motion.p>
-          
+
           <motion.div 
-            className="relative max-w-xl mx-auto"
+            className="relative max-w-xl mx-auto mb-6"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
             <input
               type="text"
-              placeholder="Search books, authors, or genres..."
+              placeholder="Search books, authors, or keywords..."
               className="w-full px-6 py-4 bg-white/90 backdrop-blur-sm rounded-xl border border-white/30 focus:border-amber-400 focus:ring-2 focus:ring-amber-200 text-gray-800 placeholder-gray-500 transition-all shadow-lg"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -162,24 +186,52 @@ const Home = () => {
           </motion.div>
 
           <motion.div 
-            className="mt-6 flex flex-wrap justify-center gap-3"
+            className="flex flex-col items-center space-y-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            {['All', 'Self-Help', 'Romance', 'Fiction', 'Non-Fiction'].map(genre => (
+            <div className="flex flex-wrap gap-3 justify-center">
               <button
-                key={genre}
-                onClick={() => setSelectedGenre(genre)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  selectedGenre === genre 
-                    ? 'bg-white text-indigo-600 shadow-md'
-                    : 'bg-white/20 text-white hover:bg-white/30 border border-white/20'
-                }`}
+                onClick={() => handleCategorySelect(null)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all
+                  ${!selectedCategory ? 'bg-white text-indigo-600 shadow-md' : 'bg-white/20 text-white hover:bg-white/30 border border-white/20'}`}
               >
-                {genre}
+                All Categories
               </button>
-            ))}
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => handleCategorySelect(cat)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all
+                    ${selectedCategory?.id === cat.id ? 'bg-white text-indigo-600 shadow-md' : 'bg-white/20 text-white hover:bg-white/30 border border-white/20'}`}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+
+            {selectedCategory && selectedCategory.subcategory.length > 0 && (
+              <motion.div 
+                className="relative mt-4 w-64"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <select
+                  value={selectedSubcategory}
+                  onChange={(e) => setSelectedSubcategory(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg bg-white shadow-md border border-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-amber-300 transition-all"
+                >
+                  <option value="All">All Types</option>
+                  {selectedCategory.subcategory.map((sub) => (
+                    <option key={sub.id} value={sub.name}>
+                      {sub.name}
+                    </option>
+                  ))}
+                </select>
+              </motion.div>
+            )}
           </motion.div>
         </div>
       </div>
@@ -196,9 +248,9 @@ const Home = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
               <h3 className="mt-4 text-lg font-medium text-gray-800">No books found</h3>
-              <p className="mt-2 text-gray-600">Try adjusting your search or filter criteria</p>
+              <p className="mt-2 text-gray-600">Try adjusting your search or filter criteria.</p>
               <button 
-                onClick={() => { setSearchQuery(''); setSelectedGenre('All'); }}
+                onClick={() => { setSearchQuery(''); handleCategorySelect(null); }}
                 className="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white font-medium transition-colors"
               >
                 Reset Filters
@@ -259,7 +311,6 @@ const Home = () => {
         )}
       </div>
 
-      
       <AnimatePresence>
         {selectedBook && (
           <motion.div 
@@ -298,7 +349,6 @@ const Home = () => {
                     </button>
                   </div>
                 </div>
-
                 <div className="relative">
                   <button 
                     className="absolute -top-4 -right-4 p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
@@ -312,7 +362,6 @@ const Home = () => {
                   <div>
                     <h2 className="text-3xl font-bold text-gray-900 mb-1">{selectedBook.title}</h2>
                     <p className="text-lg text-indigo-600 mb-4">by {selectedBook.author}</p>
-                    
                     <div className="flex items-center mb-6 space-x-4">
                       <div className="flex">
                         {[1, 2, 3, 4, 5].map((star) => (
@@ -360,17 +409,13 @@ const Home = () => {
                     <div className="flex space-x-4">
                       <button 
                         className="flex-1 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:shadow-md text-white font-medium rounded-lg transition-all"
-                        onClick={() => {
-                          setSelectedBook(null);
-                        }}
+                        onClick={() => setSelectedBook(null)}
                       >
                         Buy Now
                       </button>
                       <button 
                         className="flex-1 py-3 bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-medium rounded-lg transition-colors"
-                        onClick={() => {
-                          setSelectedBook(null);
-                        }}
+                        onClick={() => setSelectedBook(null)}
                       >
                         Add to Wishlist
                       </button>
