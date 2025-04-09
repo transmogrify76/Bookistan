@@ -133,9 +133,9 @@ const HelpPage = () => {
           className="bg-white p-6 rounded-lg shadow border border-gray-200"
         >
           <h3 className="text-xl font-semibold text-indigo-600 mb-2">Kolkata Office</h3>
-          <p className="text-gray-600">123 Book Street, College Square</p>
-          <p className="text-gray-600">Kolkata - 700073</p>
-          <p className="text-gray-600 mt-2">☎ +91 98765 43210</p>
+          <p className="text-gray-600">Mani casadona opposite ecospace </p>
+          <p className="text-gray-600">Kolkata - 700056</p>
+          <p className="text-gray-600 mt-2">☎ +91 7003696514</p>
         </motion.div>
 
         <motion.div
@@ -145,7 +145,7 @@ const HelpPage = () => {
           className="bg-white p-6 rounded-lg shadow border border-gray-200"
         >
           <h3 className="text-xl font-semibold text-indigo-600 mb-2">Email Support</h3>
-          <p className="text-gray-600">help@bookswap.in</p>
+          <p className="text-gray-600">transev.in</p>
           <p className="text-gray-600 mt-2">We respond within 24 hours</p>
         </motion.div>
 
@@ -239,7 +239,7 @@ const HelpPage = () => {
             disabled={isAnimating}
           >
             →
-          </motion.button>
+          </motion.button>  
         )}
 
         <div className="absolute bottom-8 flex gap-2">

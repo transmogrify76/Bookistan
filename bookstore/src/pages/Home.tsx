@@ -34,32 +34,11 @@ const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>('All');
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  const [books, setBooks] = useState<Book[]>([]);
   const navigate = useNavigate();
   const checkAuth = () => !!localStorage.getItem('authToken');
 
-  const books: Book[] = Array.from({ length: 32 }, (_, index) => {
-    const id = index + 1;
-    const isEven = id % 2 === 0;
-    return {
-      id,
-      title: isEven ? "The Monk Who Sold His Ferrari" : "Wish I Could Tell You",
-      author: isEven ? "Robin Sharma" : "Durjoy Dutta",
-      image: isEven
-        ? "https://m.media-amazon.com/images/I/61OByUf1TfL.jpg"
-        : "https://m.media-amazon.com/images/I/91R5TW7tdzL.jpg",
-      price: isEven ? 349 : 299,
-      genre: isEven ? "Self-Help" : "Romance",
-      description: isEven
-        ? "A spiritual self-help classic about living a more balanced and joyful life."
-        : "An emotional story about love, loss, and human connection.",
-      rating: Math.floor(Math.random() * 2) + 4,
-      pages: isEven ? 198 : 256,
-      language: "English",
-      publisher: isEven ? "HarperCollins" : "Penguin Random House",
-      year: isEven ? 1999 : 2015
-    };
-  });
-
+  // Fetch categories as before
   useEffect(() => {
     fetch('http://localhost:5400/api/booksops/loadcategories')
       .then(response => {
@@ -72,6 +51,28 @@ const Home = () => {
         setCategories(data);
       })
       .catch(error => console.error("Error fetching categories:", error));
+  }, []);
+
+  // Fetch books dynamically from your API
+  useEffect(() => {
+    fetch('http://localhost:5400/api/booksops/getallbookdata')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch books');
+        }
+        return response.json();
+      })
+      .then((data: any[]) => {
+        const updatedBooks = data.map(book => ({
+          ...book,
+          // Ensure the rating is a number; default to 0 if missing
+          rating: book.rating !== undefined ? Number(book.rating) : 0,
+          // If picture_base64 is present, use it as the image source
+          image: book.picture_base64 ? `data:image/jpeg;base64,${book.picture_base64}` : book.image,
+        }));
+        setBooks(updatedBooks);
+      })
+      .catch(error => console.error("Error fetching books:", error));
   }, []);
 
   const handleCategorySelect = (cat: Category | null) => {
@@ -89,6 +90,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+      {/* Navigation */}
       <nav className="fixed w-full top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
@@ -145,6 +147,7 @@ const Home = () => {
         </div>
       </nav>
 
+      {/* Hero Section */}
       <div className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-indigo-500 to-purple-600">
         <div className="max-w-3xl mx-auto text-center">
           <motion.h1 
@@ -236,6 +239,7 @@ const Home = () => {
         </div>
       </div>
 
+      {/* Book Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {filteredBooks.length === 0 ? (
           <motion.div 
@@ -245,7 +249,7 @@ const Home = () => {
           >
             <div className="inline-block p-8 bg-white rounded-2xl shadow-md border border-gray-100 max-w-md">
               <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253" />
               </svg>
               <h3 className="mt-4 text-lg font-medium text-gray-800">No books found</h3>
               <p className="mt-2 text-gray-600">Try adjusting your search or filter criteria.</p>
