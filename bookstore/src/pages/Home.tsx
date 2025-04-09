@@ -8,7 +8,7 @@ interface Book {
   author: string;
   image: string;
   price: number;
-  genre: string;
+  category_name: string;
   description: string;
   rating: number;
   pages: number;
@@ -83,7 +83,7 @@ const Home = () => {
   const filteredBooks = books.filter(book => {
     if (!book.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     if (selectedSubcategory !== 'All') {
-      return book.genre.toLowerCase() === selectedSubcategory.toLowerCase();
+      return book.category_name.toLowerCase() === selectedSubcategory.toLowerCase();
     }   
     return true;
   });
@@ -295,7 +295,7 @@ const Home = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-bold text-gray-900">₹{book.price}</span>
                     <span className="text-xs font-medium px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full">
-                      {book.genre}
+                      {book.category_name}
                     </span>
                   </div>
                   <div className="mt-3 flex items-center justify-between">
@@ -385,7 +385,7 @@ const Home = () => {
                     <div className="grid grid-cols-2 gap-4 mb-8">
                       <div>
                         <p className="text-sm text-gray-500">Genre</p>
-                        <p className="font-medium">{selectedBook.genre}</p>
+                        <p className="font-medium">{selectedBook.category_name}</p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Pages</p>
