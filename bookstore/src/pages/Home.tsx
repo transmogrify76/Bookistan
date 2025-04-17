@@ -162,7 +162,7 @@ const Home = () => {
     const userData = getUserFromToken();
     if (!userData) return;
     const { userid, usercartid } = userData;
-  
+
     const incrementCartItem = {
       userid,
       usercartid,
@@ -195,16 +195,16 @@ const Home = () => {
     const userData = getUserFromToken();
     if (!userData) return;
     const { userid, usercartid } = userData; // Destructure usercartid
-  
+
     if (cartQuantity <= 0) return;
-  
+
     const decrementCartItem = {
       userid,
       usercartid, // Include usercartid
       book_id: book.id.toString(),
       quantity: decrement,
     };
-  
+
     try {
       const response = await fetch("http://localhost:5400/api/cartops/decrementcart", {
         method: "POST",
@@ -277,6 +277,21 @@ const Home = () => {
                 </svg>
                 <span>Help</span>
               </button>
+              <button
+                onClick={() => navigate('/cart')}
+                className="p-1 rounded-full hover:bg-gray-100 transition-colors relative"
+              >
+                <svg className="h-5 w-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+              </button>
+
+
               {checkAuth() && (
                 <button
                   onClick={() => navigate('/profile')}
@@ -367,11 +382,10 @@ const Home = () => {
             <div className="flex flex-wrap gap-3 justify-center">
               <button
                 onClick={() => handleCategorySelect(null)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  !selectedCategory
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${!selectedCategory
                     ? 'bg-white text-indigo-600 shadow-md'
                     : 'bg-white/20 text-white hover:bg-white/30 border border-white/20'
-                }`}
+                  }`}
               >
                 All Categories
               </button>
@@ -379,11 +393,10 @@ const Home = () => {
                 <button
                   key={cat.id}
                   onClick={() => handleCategorySelect(cat)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                    selectedCategory?.id === cat.id
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedCategory?.id === cat.id
                       ? 'bg-white text-indigo-600 shadow-md'
                       : 'bg-white/20 text-white hover:bg-white/30 border border-white/20'
-                  }`}
+                    }`}
                 >
                   {cat.name}
                 </button>
@@ -550,40 +563,40 @@ const Home = () => {
                       </div>
                     </div>
                     {cartQuantity === 0 ? (
-  <button
-    onClick={async () => {
-      await handleAddToCart(selectedBook, 1);
-    }}
-    className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white text-sm font-semibold rounded-md hover:shadow-md transition-all w-28"
-  >
-    Add to Cart
-  </button>
-) : (
-  <div className="flex items-center border border-gray-300 rounded-full overflow-hidden shadow-sm">
-    <button
-      onClick={async () => {
-        await handleDecrementCart(selectedBook, 1);
-      }}
-      className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors"
-    >
-      -
-    </button>
-    <input
-      type="text"
-      value={cartQuantity}
-      readOnly
-      className="w-10 text-center text-sm font-semibold text-gray-800 bg-white outline-none"
-    />
-    <button
-      onClick={async () => {
-        await handleIncrementCart(selectedBook, 1);
-      }}
-      className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors"
-    >
-      +
-    </button>
-  </div>
-)}
+                      <button
+                        onClick={async () => {
+                          await handleAddToCart(selectedBook, 1);
+                        }}
+                        className="inline-flex items-center px-2 py-1 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white text-sm font-semibold rounded-md hover:shadow-md transition-all w-28"
+                      >
+                        Add to Cart
+                      </button>
+                    ) : (
+                      <div className="flex items-center border border-gray-300 rounded-full overflow-hidden shadow-sm">
+                        <button
+                          onClick={async () => {
+                            await handleDecrementCart(selectedBook, 1);
+                          }}
+                          className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors"
+                        >
+                          -
+                        </button>
+                        <input
+                          type="text"
+                          value={cartQuantity}
+                          readOnly
+                          className="w-10 text-center text-sm font-semibold text-gray-800 bg-white outline-none"
+                        />
+                        <button
+                          onClick={async () => {
+                            await handleIncrementCart(selectedBook, 1);
+                          }}
+                          className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors"
+                        >
+                          +
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="relative">
