@@ -7,6 +7,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import AboutUs from './pages/AboutUs';
 import HelpPage from './pages/HelpPage';
 import DonateBook from './pages/DonateBook';
+import CartPage from './pages/CartPage';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/help" element={<HelpPage />} />
         <Route path="/donate" element={<DonateBook />} />
+        <Route path="/cart" element={<CartPage />} />
       </Routes>
     </Router>
   );
