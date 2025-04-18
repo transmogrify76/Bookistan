@@ -70,9 +70,7 @@ const Home = () => {
         const updatedBooks = data.map(book => ({
           ...book,
           rating: book.rating !== undefined ? Number(book.rating) : 0,
-          image: book.picture_base64
-            ? `data:image/jpeg;base64,${book.picture_base64}`
-            : book.image,
+          image: book.picture_path
         }));
         setBooks(updatedBooks);
       })
