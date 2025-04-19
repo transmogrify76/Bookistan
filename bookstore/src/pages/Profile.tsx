@@ -8,7 +8,7 @@ interface UserProfile {
   name: string;
   email: string;
   phoneno: string;
-  roletype: string;
+  role: string;
 }
 
 interface UpdateFormData {
@@ -346,7 +346,7 @@ const Profile = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Account Type</label>
                   <input
                     type="text"
-                    value={user?.roletype || ''}
+                    value={user?.role || ''}
                     readOnly
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 cursor-not-allowed"
                   />
