@@ -33,18 +33,15 @@ const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  // For subcategory filtering. Default is "All"
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>('All');
-  // For modal, store the selected book
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
-  // Local quantity state for the modal
   const [cartQuantity, setCartQuantity] = useState(0);
   const [books, setBooks] = useState<Book[]>([]);
+  const [wishlistStatus, setWishlistStatus] = useState(false);
   const navigate = useNavigate();
 
   const checkAuth = () => !!localStorage.getItem('authToken');
 
-  // Fetch categories on mount.
   useEffect(() => {
     fetch('http://localhost:5400/api/booksops/loadcategories')
       .then(response => {
@@ -57,7 +54,6 @@ const Home = () => {
       .catch(error => console.error("Error fetching categories:", error));
   }, []);
 
-  // Fetch books on mount.
   useEffect(() => {
     fetch('http://localhost:5400/api/booksops/getallbookdata')
       .then(response => {
@@ -90,7 +86,6 @@ const Home = () => {
     return true;
   });
 
-  // Helper: Decode the token and extract user details.
   const getUserFromToken = () => {
     const token = localStorage.getItem("authToken");
     if (!token) {
@@ -114,8 +109,6 @@ const Home = () => {
     return { userid, usercartid };
   };
 
-  // Handler to add an item to the cart.
-  // If the item is already in the cart (HTTP 409), show the quantity controls.
   const handleAddToCart = async (book: Book, quantity: number = 1) => {
     const userData = getUserFromToken();
     if (!userData) return;
@@ -137,13 +130,10 @@ const Home = () => {
       });
 
       if (response.ok) {
-        // Successfully added item; update the UI and show quantity control.
         await response.json();
         setCartQuantity(quantity);
         alert("Item added to cart successfully!");
       } else if (response.status === 409) {
-        // Conflict: Item already exists in cart.
-        // Show quantity controls (default to 1 – you can change this if needed).
         setCartQuantity(1);
       } else {
         const errorText = await response.text();
@@ -155,7 +145,6 @@ const Home = () => {
     }
   };
 
-  // Handler to increment the cart quantity.
   const handleIncrementCart = async (book: Book, increment: number = 1) => {
     const userData = getUserFromToken();
     if (!userData) return;
@@ -166,7 +155,7 @@ const Home = () => {
       usercartid,
       book_id: book.id.toString(),
       quantity: increment,
-      price: book.price, // Include as required by the API struct
+      price: book.price,
     };
 
     try {
@@ -188,17 +177,16 @@ const Home = () => {
     }
   };
 
-  // Handler to decrement the cart quantity.
   const handleDecrementCart = async (book: Book, decrement: number = 1) => {
     const userData = getUserFromToken();
     if (!userData) return;
-    const { userid, usercartid } = userData; // Destructure usercartid
+    const { userid, usercartid } = userData;
 
     if (cartQuantity <= 0) return;
 
     const decrementCartItem = {
       userid,
-      usercartid, // Include usercartid
+      usercartid,
       book_id: book.id.toString(),
       quantity: decrement,
     };
@@ -221,15 +209,46 @@ const Home = () => {
       alert("An error occurred while decrementing the cart.");
     }
   };
-  // When opening the modal, reset the quantity.
+
+  const handleAddToWishlist = async () => {
+    const userData = getUserFromToken();
+    if (!userData || !selectedBook) return;
+    const { userid } = userData;
+
+    const wishlistItem = {
+      book_id: selectedBook.id.toString(),
+      userid: userid,
+    };
+
+    try {
+      const response = await fetch("http://localhost:5400/api/wishops/addtowishlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(wishlistItem),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setWishlistStatus(result.addedtolist);
+        alert(result.addedtolist ? "Added to wishlist!" : "Removed from wishlist.");
+      } else {
+        const errorText = await response.text();
+        alert("Error updating wishlist: " + errorText);
+      }
+    } catch (error) {
+      console.error("Error updating wishlist:", error);
+      alert("An error occurred while updating the wishlist.");
+    }
+  };
+
   const openBookModal = (book: Book) => {
     setSelectedBook(book);
     setCartQuantity(0);
+    setWishlistStatus(false);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      {/* Navigation */}
       <nav className="fixed w-full top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
@@ -289,7 +308,6 @@ const Home = () => {
                 </svg>
               </button>
 
-
               {checkAuth() && (
                 <button
                   onClick={() => navigate('/profile')}
@@ -328,7 +346,6 @@ const Home = () => {
         </div>
       </nav>
 
-      {/* Hero Section */}
       <div className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-indigo-500 to-purple-600">
         <div className="max-w-3xl mx-auto text-center">
           <motion.h1
@@ -425,7 +442,6 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Book Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {filteredBooks.length === 0 ? (
           <motion.div
@@ -524,7 +540,6 @@ const Home = () => {
         )}
       </div>
 
-      {/* Book Detail Modal */}
       <AnimatePresence>
         {selectedBook && (
           <motion.div
@@ -659,9 +674,9 @@ const Home = () => {
                       </button>
                       <button
                         className="flex-1 py-3 bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-medium rounded-full transition-colors"
-                        onClick={() => setSelectedBook(null)}
+                        onClick={handleAddToWishlist}
                       >
-                        Add to Wishlist
+                        {wishlistStatus ? 'Remove from Wishlist' : 'Add to Wishlist'}
                       </button>
                     </div>
                   </div>

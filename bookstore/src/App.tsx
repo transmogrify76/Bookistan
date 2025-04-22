@@ -8,6 +8,7 @@ import AboutUs from './pages/AboutUs';
 import HelpPage from './pages/HelpPage';
 import DonateBook from './pages/DonateBook';
 import CartPage from './pages/CartPage';
+import WishlistPage from './pages/WishlistPage';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/help" element={<HelpPage />} />
         <Route path="/donate" element={<DonateBook />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/wishlist" element={<WishlistPage />} />
       </Routes>
     </Router>
   );
