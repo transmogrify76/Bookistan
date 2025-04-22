@@ -26,7 +26,7 @@ interface WishlistItem {
 }
 
 const WishlistPage = () => {
-  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
+  const [, setWishlistItems] = useState<WishlistItem[]>([]);
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
