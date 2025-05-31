@@ -9,6 +9,8 @@ interface Book {
   author: string;
   image: string;
   price: number;
+  discount_price: number;   // NEW
+  discount_percent: number; // NEW
   category_name: string;
   description: string;
   rating: number;
@@ -65,7 +67,9 @@ const Home = () => {
         const updatedBooks = data.map(book => ({
           ...book,
           rating: book.rating !== undefined ? Number(book.rating) : 0,
-          image: book.picture_path
+          image: book.picture_path,
+          discount_price: book.discount_price,   // NEW
+          discount_percent: book.discount_percent // NEW
         }));
         setBooks(updatedBooks);
       })
@@ -407,8 +411,18 @@ const Home = () => {
                   </div>
                 </div>
                 <div className="p-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold text-gray-900">₹{book.price}</span>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-lg font-bold text-gray-900">
+                          ₹{book.discount_price}
+                        </span>
+                        <s className="text-sm text-gray-500">₹{book.price}</s>
+                      </div>
+                      <span className="text-xs font-medium px-1.5 py-0.5 bg-red-100 text-red-800 rounded mt-1 inline-block">
+                        {book.discount_percent}% OFF
+                      </span>
+                    </div>
                     <span className="text-xs font-medium px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full">
                       {book.category_name}
                     </span>
@@ -451,7 +465,15 @@ const Home = () => {
                     <div className="flex items-baseline justify-between">
                       <div>
                         <span className="text-sm text-gray-500">Price</span>
-                        <p className="text-2xl font-bold text-gray-900">₹{selectedBook.price}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-2xl font-bold text-gray-900">
+                            ₹{selectedBook.discount_price}
+                          </p>
+                          <s className="text-lg text-gray-500">₹{selectedBook.price}</s>
+                          <span className="text-sm font-medium px-1.5 py-0.5 bg-red-100 text-red-800 rounded">
+                            {selectedBook.discount_percent}% OFF
+                          </span>
+                        </div>
                       </div>
                     </div>
                     {cartQuantity === 0 ? (
