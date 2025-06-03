@@ -9,8 +9,8 @@ interface Book {
   author: string;
   image: string;
   price: number;
-  discount_price: number;   // NEW
-  discount_percent: number; // NEW
+  discount_price: number;
+  discount_percent: number;
   category_name: string;
   description: string;
   rating: number;
@@ -31,6 +31,11 @@ interface Category {
   subcategory: Subcategory[];
 }
 
+interface RatingState {
+  rating: number;
+  description: string;
+}
+
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
@@ -43,6 +48,11 @@ const Home = () => {
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [showOrderForm, setShowOrderForm] = useState(false);
+  const [userRating, setUserRating] = useState<RatingState>({
+    rating: 0,
+    description: ''
+  });
+  const [isRatingSubmitted, setIsRatingSubmitted] = useState(false);
   const navigate = useNavigate();
 
   const checkAuth = () => !!localStorage.getItem('authToken');
@@ -68,8 +78,8 @@ const Home = () => {
           ...book,
           rating: book.rating !== undefined ? Number(book.rating) : 0,
           image: book.picture_path,
-          discount_price: book.discount_price,   // NEW
-          discount_percent: book.discount_percent // NEW
+          discount_price: book.discount_price,
+          discount_percent: book.discount_percent
         }));
         setBooks(updatedBooks);
       })
@@ -150,7 +160,6 @@ const Home = () => {
       usercartid: userData.usercartid,
       book_id: book.id.toString(),
       quantity: increment,
-      // price: book.price,
     };
 
     try {
@@ -255,11 +264,49 @@ const Home = () => {
     }
   };
 
+  const handleRatingSubmit = async () => {
+    const userData = getUserFromToken();
+    if (!userData || !selectedBook) return;
+
+    const ratingData = {
+      bookid: selectedBook.id.toString(),
+      userid: userData.userid,
+      rating: userRating.rating,
+      description: userRating.description
+    };
+
+    try {
+      const response = await fetch("http://localhost:5400/api/ratingops/addrating", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(ratingData),
+      });
+
+      if (response.ok) {
+        setIsRatingSubmitted(true);
+        // Update the book's rating display
+        const updatedBooks = books.map(book => 
+          book.id === selectedBook.id ? 
+          { ...book, rating: (book.rating + userRating.rating) / 2 } : 
+          book
+        );
+        setBooks(updatedBooks);
+      } else {
+        alert("Error submitting rating: " + await response.text());
+      }
+    } catch (error) {
+      console.error("Error submitting rating:", error);
+      alert("An error occurred while submitting the rating.");
+    }
+  };
+
   const openBookModal = (book: Book) => {
     setSelectedBook(book);
     setCartQuantity(0);
     setWishlistStatus(false);
     setShowOrderForm(false);
+    setUserRating({ rating: 0, description: '' });
+    setIsRatingSubmitted(false);
   };
 
   const handleBuyNowClick = () => {
@@ -578,6 +625,42 @@ const Home = () => {
                       <p className="text-gray-700 leading-relaxed">{selectedBook.description}</p>
                     </div>
 
+                    {/* Rating Section */}
+                    <div className="mb-6">
+                      <h3 className="text-lg font-semibold mb-3 text-gray-900">Rate this book</h3>
+                      {isRatingSubmitted ? (
+                        <p className="text-green-600">Thank you for your rating!</p>
+                      ) : (
+                        <>
+                          <div className="flex mb-3">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <button
+                                key={star}
+                                onClick={() => setUserRating(prev => ({...prev, rating: star}))}
+                                className={`text-2xl ${star <= userRating.rating ? 'text-amber-400' : 'text-gray-300'}`}
+                              >
+                                ★
+                              </button>
+                            ))}
+                          </div>
+                          <textarea
+                            value={userRating.description}
+                            onChange={(e) => setUserRating(prev => ({...prev, description: e.target.value}))}
+                            placeholder="Share your thoughts about this book..."
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                            rows={3}
+                          />
+                          <button
+                            onClick={handleRatingSubmit}
+                            disabled={userRating.rating === 0}
+                            className={`mt-2 px-4 py-2 rounded-md ${userRating.rating === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} text-white transition-colors`}
+                          >
+                            Submit Rating
+                          </button>
+                        </>
+                      )}
+                    </div>
+
                     {showOrderForm ? (
                       <div className="space-y-4">
                         <div>
@@ -683,7 +766,7 @@ const Home = () => {
               </a>
               <a href="#" className="text-indigo-200 hover:text-white transition-colors">
                 <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zM13.5 8.5c0-1.38-1.119-2.5-2.5-2.5s-2.5 1.12-2.5 2.5 1.119 2.5 2.5 2.5 2.5-1.12 2.5-2.5z" />
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
                 </svg>
               </a>
             </div>
